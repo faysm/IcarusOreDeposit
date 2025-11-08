@@ -105,7 +105,7 @@ world, X, Y, Ressource = decompressed
             const modeSwitch = document.getElementById("modeSwitch");
             const isExoticsMode = modeSwitch.checked;
             console.log("Switch Exotic mode ? : " + isExoticsMode);
-            const assetNames= ['Aluminium','Clay','Coal','Copper','Frozen_Wood','Gold','Iron','Obsidian','Oxite','Platinum','Salt','Silicon','Stone','Sulfur','Titanium','Exotic','Exotic_Red_Raw'];
+            const assetNames= ['Aluminium','Clay','Coal','Copper','Frozen_Wood','Gold','Iron','Obsidian','Oxite','Platinum','Salt', 'Scoria', 'Silicon','Stone','Sulfur','Titanium','Exotic','Exotic_Red_Raw'];
         
             async function loadAssets(assetNames) {
                 const assets = [];
@@ -134,16 +134,16 @@ world, X, Y, Ressource = decompressed
                 
                 const asset = new Image();
                 const curr_ressource = Ressource.get(nb_deep_veins);
-                if (curr_ressource != 'Exotic' && curr_ressource != 'Exotic_Red_Raw' && !isExoticsMode) {
+                if ((curr_ressource != 'Exotic' && curr_ressource != 'Exotic_Red_Raw') && !isExoticsMode) {
                     const width = 40;  // desired width in pixels
                     const height = 40; // desired height in pixels
                     const pos_x = X.get(nb_deep_veins);
                     const pos_y = Y.get(nb_deep_veins);
-
+                    console.log(curr_ressource);
                     id = assetNames.indexOf(curr_ressource);
                     ctx.drawImage(assets[id], pos_x-20, pos_y-20, width, height);
                 }
-                if (curr_ressource == 'Exotic' || curr_ressource == 'Exotic_Red_Raw' && isExoticsMode){
+                if ( (curr_ressource == 'Exotic' || curr_ressource == 'Exotic_Red_Raw') && isExoticsMode){
                     const width = 80;  // desired width in pixels
                     const height = 80; // desired height in pixels
                     const pos_x = X.get(nb_deep_veins);
