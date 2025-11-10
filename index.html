@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Icarus DeepOreScanner Demo</title>
+  <link rel="stylesheet" href="/libs/leaflet/leaflet.css" />
   <style>
     body {
       margin: 0;
@@ -58,96 +59,35 @@
       margin-bottom: 20px;
     }
 
-    #mapImage {
-      display: none;
-      border-radius: 0px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      width: auto;
-      height: auto;
-      margin-top: 20px;
-      margin-bottom: 40px;
+
+    #map {
+      width: 1500px;
+      height: 1000px;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      margin: 20px auto; /* center horizontally */
+      background: radial-gradient(circle at center, #1a1a1a 0%, #0d0d0d 80%);
     }
 
-
-.toggle-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
+.grid-label {
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    text-shadow: 
+      -1px -1px 0 #000,  
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000; /* black outline */
+    text-align: center;
+    pointer-events: none; /* don't block map interactions */
 }
 
-.toggle-label-left,
-.toggle-label-right {
-  font-size: 14px;
-  color: #333;
-  user-select: none;
-}
 
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 30px;   /* was 60px, now half */
-  height: 17px;  /* was 34px, now half */
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #2196F3;
-  transition: .4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 13px;  /* half of 26px */
-  width: 13px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #cf16c0;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #cf16c0;
-}
-
-input:checked + .slider:before {
-  transform: translateX(13px); /* half of 26px */
-}
-  </style>
+</style>
 </head>
 <body>
   <div id="controls">
-    <h1>Icarus DeepOreScanner Demo</h1>
-
-     <div class="toggle-container">
-         <span class="toggle-label-left">Deep ore veins</span>
-
-    <label class="switch">
-        <input type="checkbox" id="modeSwitch">
-        <span class="slider round"></span>
-  </label>
-
-  <span class="toggle-label-right">Exotics</span>
-</div>
+    <h1>Icarus DeepOreScanner</h1>
 
     <div id="dropzone">
       drag & drop your prospect file here<br>(.json format)
@@ -161,11 +101,15 @@ Location: \AppData\Local\Icarus\Saved\PlayerData\PlayerDataID\Prospects\
 
   </div>
 
-  <img id="mapImage" alt="Map preview will appear here"  style="display:none;"/>
-  <canvas id="mapCanvas"></canvas>
+  <div id="map"></div>
 
   <!-- Pako -->
-  <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
+  <script src="libs/pako/pako.min.js"></script>
+
+  <!-- Leaflet JS -->
+  <script src="/libs/leaflet/leaflet.js"></script>
+
   <script src="main.js"></script>
+
 </body>
 </html>
