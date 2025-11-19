@@ -89,6 +89,28 @@ async function handleFile(file) {
             return 0;
         }
 
+        function lastIndexOfSubarray(haystack, needle, fromIndex) {
+            const hLen = haystack.length;
+            const nLen = needle.length;
+
+            // Clamp fromIndex if needed
+            if (fromIndex > hLen - nLen) {
+                fromIndex = hLen - nLen;
+            }
+
+            for (let i = fromIndex; i >= 0; i--) {
+                let found = true;
+                for (let j = 0; j < nLen; j++) {
+                    if (haystack[i + j] !== needle[j]) {
+                        found = false;
+                        break;
+                    }
+                }
+                if (found) return i;
+            }
+            return 0;
+        }
+
 
         let world = "Unknown";
         let map_scale = 0;
@@ -148,44 +170,62 @@ async function handleFile(file) {
             'Script/Icarus.ResourceDepositRecorderComponent',
             'VoxelActorLocation'
         ];
-
+        let skipLengths = [46, 18];
+        if(world == "Prometheus"){
+            flags.push('Terrain_019_DLC/Terrain_019.Terrain_019:PersistentLevel.BP_Exotic_Plant_C');
+            skipLengths.push(73);
+        }
 
         
-        let flag1Needupdate = 1;
-        let flag2Needupdate = 1;
-        let offset1 = 1;
-        let offset2 = 1;
+        let flagNeedupdateArray = [];
+        let offsetArray = [];
+        for(let i=0;i<flags.length;i++){
+            flagNeedupdateArray.push(1);
+            offsetArray.push(1);
+        }
+
         let X_voxel = [];
         let Y_voxel = [];
+        let X_strangePlant = [];
+        let Y_strangePlant = [];
 
-        while ( (flag1Needupdate+flag2Needupdate) ){
+        flagNeedupdateArray.some
 
-            let flag;
+        // I feel like this is more complicated than it should be. I want to minimise the calls to indexOfSubarray as much as possible (expensiveish).
+        // So i want the offset to move linearly through the bytes blob and not jump left & right.
+        // For now i'm using flags so it's probably the most efficient, but it's really not the smartest, and it's somewhat hard to read/navigate.
+        while (flagNeedupdateArray.some(v => v)){
+          
+            // update all flags
+            for(let i=0; i<flagNeedupdateArray.length;i++){
+                if(flagNeedupdateArray[i]){
+                    offsetArray[i] = indexOfSubarray(data, stringToBytes(flags[i]), offset);
+                }
+                flagNeedupdateArray[i] = 0;
+            }
             
-            if(flag1Needupdate){
-                offset1 =  indexOfSubarray(data, stringToBytes(flags[0]), offset);
-                flag1Needupdate = 0;
-                //offset+=46;
-            }
-            if(flag2Needupdate){
-                offset2 =  indexOfSubarray(data, stringToBytes(flags[1]), offset);
-                flag2Needupdate = 0;
-                //offset+=18;
-            }
-            
-            if(offset1 !== 0 && (offset2 === 0 || offset1 <= offset2)){
-                flag1Needupdate = 1;
-                offset = offset1;
-                flag = flags[0];
-                offset+=46; 
-            }
-            if(offset2 !== 0 && (offset1 === 0 || offset2 < offset1)){
-                flag2Needupdate = 1;
-                offset = offset2;
-                flag = flags[1];
-                offset+=18;
+
+            // Find next smallest non-zero offset & grab the flag index 
+            let nextIndex = -1;
+            let nextOffset = Infinity;
+            for (let i = 0; i < offsetArray.length; i++) {
+                if (offsetArray[i] !== 0 && offsetArray[i] < nextOffset) {
+                    nextOffset = offsetArray[i];
+                    nextIndex = i;
+                }
             }
 
+            if (nextIndex === -1) {
+                break;
+            }
+
+            // Update the current: offset,flag, offsetskip
+            offset = nextOffset;
+            let flag = flags[nextIndex];
+            offset += skipLengths[nextIndex];
+            flagNeedupdateArray[nextIndex] = 1;
+
+            // Deep ore veins
             if(flag == flags[0]){
 
                 offset = indexOfSubarray(data, stringToBytes('NameProperty'), offset);
@@ -218,6 +258,7 @@ async function handleFile(file) {
 
             }
 
+            // Exotic voxels
             if(flag == flags[1]){
   
                 offset = indexOfSubarray(data, stringToBytes('Vector'), offset);
@@ -230,16 +271,36 @@ async function handleFile(file) {
                 Y_voxel.push(view.getFloat32(4, true));
 
             }
+            
 
-        }
-           
+            // Exotic plants.
+            if(world == "Prometheus"){
+                
+                if(flag == flags[2]){
+                    // For exotic plants the logic is a bit different, need a new indexOfSubarray function to move backward & not forward (location bytes are before the flag).
+                    // It also means that i need to use a temp offset to avoid going backward & trigger the forward flag[2] on repeat.
+                    let offsettmp = lastIndexOfSubarray(data,stringToBytes('Translation'),offset);
+                    offsettmp = indexOfSubarray(data, stringToBytes('Vector'), offsettmp);
+                    offsettmp+=24;
+                    const vectorBytes = data.subarray(offsettmp, offsettmp + 12);
+                    const view = new DataView(vectorBytes.buffer, vectorBytes.byteOffset, vectorBytes.byteLength);
+                    X_strangePlant.push(view.getFloat32(0, true));
+                    Y_strangePlant.push(view.getFloat32(4, true));
+                }
+            }
+
+        }                  
 
         // Display results
         output.textContent = `Processed ${file.name} successfully!\n` +
             `World: ${world}\n`;
 
         const assetNames = ['Aluminium', 'Clay', 'Coal', 'Copper', 'Frozen_Wood', 'Gold', 'Iron', 'Obsidian', 'Oxite', 'Platinum', 'Salt', 'Scoria', 'Silicon', 'Stone', 'Sulfur', 'Titanium', 'Exotic', 'Exotic_Red_Raw'];
+        // search needle to add: PersistentLevel.BP_Exotic_Plant_C
         const fixedassetNames = ['VoxelExotic'];
+        if(world == "Prometheus"){
+            fixedassetNames.push("ExoticSeed");
+        }
 
         async function loadAssets(assetNames, folder = 'Ores') {
             const assets = [];
@@ -385,8 +446,25 @@ async function handleFile(file) {
         const exoticOre = L.layerGroup(exoticOreMarkers);
         
         layerControl.addOverlay(deepOre, "Deep ore veins");
-        layerControl.addOverlay(exoticOre, "Exotics");
+        layerControl.addOverlay(exoticOre, "Exotic Deposit");
         layerControl.addOverlay(exoticVoxel, "Exotic Voxels");
+
+        if(world == "Prometheus"){
+            const exoticSeedIcon = L.icon({
+            iconUrl: fixedAssets[1].src,
+            iconSize: [60, 60],
+            iconAnchor: [30,30]
+            });
+            const exoticSeedMarkers = [];
+            for(let i=0;i<X_strangePlant.length;i++){
+                const latLng = [map_scale - (map_scale - (Max_map_size_meters - Y_strangePlant[i]) / scale), ((X_strangePlant[i]  - Min_map_size_meters) / scale)];
+                exoticSeedMarkers.push(L.marker(latLng, {icon: exoticSeedIcon}))
+            }
+
+            const exoticPlants = L.layerGroup(exoticSeedMarkers);
+            layerControl.addOverlay(exoticPlants, "Exotic Plants");
+
+        }
 
 
 
