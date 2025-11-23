@@ -47,7 +47,7 @@ async function handleFile(file) {
 
         let blobf = blobline.substring(17, blobline.length - 2);
         //console.log(blobf);
-        //For some reason, the blob still has endline characters ... 
+        //For some reason, the blob still has endline characters ...
         blobf = blobf
             .trim()
             .replace(/["',]/g, '')
@@ -155,7 +155,7 @@ async function handleFile(file) {
         let Y = [];
         let Ressource = [];
 
-        // Bwah there's probably a lib to read little-endian integers, but i cba 
+        // Bwah there's probably a lib to read little-endian integers, but i cba
         function readUInt32LE(bytes, offset) {
             return (
                 bytes[offset] |
@@ -205,7 +205,7 @@ async function handleFile(file) {
             }
 
 
-            // Find next smallest non-zero offset & grab the flag index 
+            // Find next smallest non-zero offset & grab the flag index
             let nextIndex = -1;
             let nextOffset = Infinity;
             for (let i = 0; i < offsetArray.length; i++) {
@@ -290,7 +290,7 @@ async function handleFile(file) {
             }
 
         }
-        console.log(Ressource);
+        // console.log(Ressource);
         // Display results
         output.textContent = `Processed ${file.name} successfully!\n` +
             `World: ${world}\n`;
@@ -338,7 +338,6 @@ async function handleFile(file) {
             maxBounds: [[-0.1 * map_scale, -0.1 * map_scale], [map_scale * 1.1, map_scale * 1.1]],
             maxBoundsViscosity: 1.0
         });
-
 
         const bounds = [[0, 0], [imgHeight, imgWidth]]; // [top-left, bottom-right] in pixels
         const imageLayer = L.imageOverlay(`assets/Maps/${world}Filtered.png`, bounds);
@@ -416,8 +415,8 @@ async function handleFile(file) {
 
         const voxelExoticMarkers = [];
         const voxelExoticMarkersNullSector = [];
-        epsilon = 50;
-        // Lets do it with L∞ norm to be slightly faster. 
+        const epsilon = 50;
+        // Lets do it with L∞ norm to be slightly faster.
         for (let i = 0; i < X_voxel.length; i++) {
             for (let j = 0; j < exoticPossibleSpawn[0].length; j++) {
                 // Only do first if when needed.
@@ -455,41 +454,42 @@ async function handleFile(file) {
             });
         });
 
-        const deepOremarkers = [];
-        const exoticOreMarkers = [];
-        const deepOreMarkersNullSector = [];
+        const deepOremarkers = new L.LayerGroup();
+        const exoticOreMarkers = new L.LayerGroup();
+        const deepOreMarkersNullSector = new L.LayerGroup();
 
         for (let nb_deep_veins = 0; nb_deep_veins < Ressource.length; nb_deep_veins++) {
 
-            const asset = new Image();
             const curr_ressource = Ressource[nb_deep_veins];
             id = assetNames.indexOf(curr_ressource);
             const latLng = [map_scale - Y[nb_deep_veins], X[nb_deep_veins]];
-            const icon = icons[curr_ressource];
-            var marker = L.marker(latLng, { icon })
+            const marker = new L.ImageOverlay(
+                `assets/Ores/${curr_ressource}.png`,
+                [latLng.map(v => v - 10), latLng.map(v => v + 10)],
+                { interactive: true }
+            )
             marker.bindPopup(curr_ressource);
             if ((curr_ressource != 'Exotic' && curr_ressource != 'Exotic_Red_Raw')) {
                 if (world == "Prometheus") {
                     if (InNullsector(X[nb_deep_veins], Y[nb_deep_veins])) {
-                        deepOreMarkersNullSector.push(marker);
+                        deepOreMarkersNullSector.addLayer(marker);
                     } else {
-                        deepOremarkers.push(marker);
+                        deepOremarkers.addLayer(marker);
                     }
                 } else {
-                    deepOremarkers.push(marker);
+                    deepOremarkers.addLayer(marker);
                 }
             }
             if ((curr_ressource == 'Exotic' || curr_ressource == 'Exotic_Red_Raw')) {
-                exoticOreMarkers.push(marker);
+                exoticOreMarkers.addLayer(marker);
             }
-
         };
 
         let exoticVoxel = L.layerGroup(voxelExoticMarkers);
         const exoticVoxelNullSector = L.layerGroup(voxelExoticMarkersNullSector);
-        let deepOre = L.layerGroup(deepOremarkers);
-        const deepOreNullSector = L.layerGroup(deepOreMarkersNullSector);
-        const exoticOre = L.layerGroup(exoticOreMarkers);
+        let deepOre = L.layerGroup([deepOremarkers]);
+        const deepOreNullSector = L.layerGroup([deepOreMarkersNullSector]);
+        const exoticOre = L.layerGroup([exoticOreMarkers]);
 
 
         layerControl.addOverlay(deepOre, "Deep ore veins");
@@ -532,20 +532,20 @@ async function handleFile(file) {
                         imageLayer.addTo(map);
 
                         deepOre.clearLayers();
-                        deepOre.addLayer(L.layerGroup(deepOremarkers));
+                        deepOre.addLayer(L.layerGroup([deepOremarkers]));
 
                         exoticVoxel.clearLayers();
-                        exoticVoxel.addLayer(L.layerGroup(voxelExoticMarkers));
+                        exoticVoxel.addLayer(L.layerGroup([voxelExoticMarkers]));
                     } else {
                         map.removeLayer(imageLayer);
                         imageLayerNullSector.addTo(map);
 
                         deepOre.clearLayers();
-                        deepOre.addLayer(L.layerGroup(deepOremarkers));
+                        deepOre.addLayer(L.layerGroup([deepOremarkers]));
                         deepOre.addLayer(deepOreNullSector);
 
                         exoticVoxel.clearLayers();
-                        exoticVoxel.addLayer(L.layerGroup(voxelExoticMarkers));
+                        exoticVoxel.addLayer(L.layerGroup([voxelExoticMarkers]));
                         exoticVoxel.addLayer(exoticVoxelNullSector);
                     }
                     showingFull = !showingFull;

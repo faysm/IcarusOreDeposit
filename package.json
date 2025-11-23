@@ -1,0 +1,19 @@
+{
+  "name": "icarus-ore-deposit",
+  "version": "1.0.0",
+  "description": "## To do list :",
+  "main": "main.js",
+  "scripts": {
+    "dev": "npx serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "leaflet": "^1.9.4"
+  },
+  "devDependencies": {
+    "serve": "^14.2.5"
+  }
+}
