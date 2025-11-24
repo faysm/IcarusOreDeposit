@@ -3,6 +3,7 @@
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
 const output = document.getElementById("output");
+/**@type {import('leaflet').Map} */
 let map;
 
 // -------------------- Prevent default drag & drop anywhere --------------------
@@ -367,7 +368,7 @@ async function handleFile(file) {
         map.fitBounds(bounds);
         map.setZoom(map.getZoom() + initialZoom);
 
-
+        
         // Lets make a grid ... I guess.
         const gridLayer = L.layerGroup();
         const rows = 16;
@@ -453,11 +454,11 @@ async function handleFile(file) {
                 iconAnchor: name.includes('Exotic') ? [20, 20] : [20, 20] // center anchor
             });
         });
-
+        
         const deepOremarkers = new L.LayerGroup();
         const exoticOreMarkers = new L.LayerGroup();
         const deepOreMarkersNullSector = new L.LayerGroup();
-
+        
         for (let nb_deep_veins = 0; nb_deep_veins < Ressource.length; nb_deep_veins++) {
 
             const curr_ressource = Ressource[nb_deep_veins];
@@ -465,7 +466,7 @@ async function handleFile(file) {
             const latLng = [map_scale - Y[nb_deep_veins], X[nb_deep_veins]];
             const marker = new L.ImageOverlay(
                 `assets/Ores/${curr_ressource}.png`,
-                [latLng.map(v => v - 10), latLng.map(v => v + 10)],
+                [latLng.map(v => v - 5), latLng.map(v => v + 5)],
                 { interactive: true }
             )
             marker.bindPopup(curr_ressource);
@@ -495,6 +496,7 @@ async function handleFile(file) {
         layerControl.addOverlay(deepOre, "Deep ore veins");
         layerControl.addOverlay(exoticOre, "Exotic Deposit");
         layerControl.addOverlay(exoticVoxel, "Exotic Voxels");
+    
 
         if (world == "Prometheus") {
 
@@ -525,12 +527,12 @@ async function handleFile(file) {
             if (toggleButton) {
                 // Show the button
                 toggleButton.style.display = "inline";
-
+                
                 toggleButton.onclick = () => {
                     if (showingFull) {
                         map.removeLayer(imageLayerNullSector);
                         imageLayer.addTo(map);
-
+                        
                         deepOre.clearLayers();
                         deepOre.addLayer(L.layerGroup([deepOremarkers]));
 
