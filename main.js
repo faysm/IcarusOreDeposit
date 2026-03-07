@@ -188,7 +188,15 @@ async function handleFile(file) {
             flags.push('Terrain_019_DLC/Terrain_019.Terrain_019:PersistentLevel.BP_Exotic_Plant_C');
             skipLengths.push(73);
         }
-
+        // ── Elysium-specific deposit types ──────────────────────────────────────
+        // Uranium: Translation block is BEFORE the flag (~860 bytes back)
+        // Oil:     Translation block is AFTER the flag (~600 bytes forward)
+        if (world === "Elysium") {
+            flags.push('BP_MetaDeposit_Uranium_Node_C');
+            skipLengths.push(1);
+            flags.push('BP_OilGeyser_C');
+            skipLengths.push(1);
+        }
 
         let flagNeedupdateArray = [];
         let offsetArray = [];
@@ -201,6 +209,11 @@ async function handleFile(file) {
         let Y_voxel = [];
         let X_strangePlant = [];
         let Y_strangePlant = [];
+        // Elysium-only coordinate arrays
+        let X_uranium = [];
+        let Y_uranium = [];
+        let X_oil = [];
+        let Y_oil = [];
 
         flagNeedupdateArray.some
 
@@ -285,6 +298,43 @@ async function handleFile(file) {
 
             }
 
+            // Uranium nodes (Elysium only) — Translation block is BEFORE the flag
+            if (world === "Elysium" && flag === 'BP_MetaDeposit_Uranium_Node_C') {
+                const transIdx = lastIndexOfSubarray(data, stringToBytes('Translation'), offset);
+                if (transIdx !== 0) {
+                    const vecIdx = indexOfSubarray(data, stringToBytes('Vector'), transIdx);
+                    if (vecIdx !== 0 && vecIdx < offset) {
+                        const vo = vecIdx + 24;
+                        const vb = data.subarray(vo, vo + 12);
+                        const vv = new DataView(vb.buffer, vb.byteOffset, vb.byteLength);
+                        const ux = vv.getFloat32(0, true);
+                        const uy = vv.getFloat32(4, true);
+                        if (Math.abs(ux) > 1000 || Math.abs(uy) > 1000) {
+                            X_uranium.push(ux);
+                            Y_uranium.push(uy);
+                        }
+                    }
+                }
+            }
+
+            // Oil geysers (Elysium only) — Translation block is AFTER the flag
+            if (world === "Elysium" && flag === 'BP_OilGeyser_C') {
+                const transIdx = indexOfSubarray(data, stringToBytes('Translation'), offset);
+                if (transIdx !== 0) {
+                    const vecIdx = indexOfSubarray(data, stringToBytes('Vector'), transIdx);
+                    if (vecIdx !== 0) {
+                        const vo = vecIdx + 24;
+                        const vb = data.subarray(vo, vo + 12);
+                        const vv = new DataView(vb.buffer, vb.byteOffset, vb.byteLength);
+                        const ox = vv.getFloat32(0, true);
+                        const oy = vv.getFloat32(4, true);
+                        if (Math.abs(ox) > 1000 || Math.abs(oy) > 1000) {
+                            X_oil.push(ox);
+                            Y_oil.push(oy);
+                        }
+                    }
+                }
+            }
 
             // Exotic plants.
             if (world == "Prometheus") {
@@ -519,7 +569,7 @@ async function handleFile(file) {
 
             var marker = L.marker(latLng, { icon })
             marker.bindPopup(curr_ressource);
-            if ((curr_ressource != 'Exotic' && curr_ressource != 'Exotic_Red_Raw')) {
+            if ((curr_ressource != 'Exotic' && curr_ressource != 'Exotic_Red_Raw' && curr_ressource != 'Exotic_Raw_Uranium')) {
                 if (world == "Prometheus") {
                     if (InNullsector(X[nb_deep_veins], Y[nb_deep_veins])) {
                         deepOreMarkersNullSector.push(marker);
@@ -546,6 +596,38 @@ async function handleFile(file) {
         layerControl.addOverlay(deepOre, "Deep ore veins");
         layerControl.addOverlay(exoticOre, "Exotic Deposit");
         layerControl.addOverlay(exoticVoxel, "Exotic Voxels");
+
+        // ── Elysium-specific layers ──────────────────────────────────────────────
+        if (world === "Elysium") {
+            const uraniumIcon = L.icon({
+                iconUrl: 'assets/Ores/Exotic_Raw_Uranium.png',
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
+            });
+            const uraniumMarkers = X_uranium.map((x, i) => {
+                const px = (x - Min_map_size_meters) / scale;
+                const py = map_scale - (Max_map_size_meters - Y_uranium[i]) / scale;
+                const m = L.marker([map_scale - py, px], { icon: uraniumIcon });
+                m.bindPopup("Uranium Node");
+                return m;
+            });
+            layerControl.addOverlay(L.layerGroup(uraniumMarkers), "Uranium Nodes");
+
+            const oilIcon = L.icon({
+                iconUrl: 'assets/Ores/Crude_Oil.png',
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
+            });
+            const oilMarkers = X_oil.map((x, i) => {
+                const px = (x - Min_map_size_meters) / scale;
+                const py = map_scale - (Max_map_size_meters - Y_oil[i]) / scale;
+                const m = L.marker([map_scale - py, px], { icon: oilIcon });
+                m.bindPopup("Oil Geyser");
+                return m;
+            });
+            layerControl.addOverlay(L.layerGroup(oilMarkers), "Oil Geysers");
+            layerControl.removeLayer(exoticVoxel, "Exotic Voxels");
+        }
 
         if (world == "Prometheus") {
 
