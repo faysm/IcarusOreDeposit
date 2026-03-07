@@ -117,6 +117,7 @@ async function handleFile(file) {
         let offset = 0;
         let exoticPossibleSpawn;
         let geyserSpawnLocationsPixel;
+        const unknownResources = new Set();
 
         // Lazy loading of the POI coordinates, but i believe it's more efficient than an async func to load them. Plus i need them all in memory. Subject to change.
         // Map detection
@@ -144,6 +145,18 @@ async function handleFile(file) {
             [-323836.6, -168459.86, 13954.307, -259411.94, -168637.84, -265392.56, -149583.95, -73823.48, -319986.97, -293744.2, -294568.9, -141790.84, -89656.13, -74344.47, -312703.84, -39010.72, -200672.1, -51688.953, -37168.668, 29181.61, 30259.236, 58882.523, -2421.6826, 25325.066, 98177.086, -43489.797, -11622.246, -106307.55, -196700.31, -202386.42, -64244.473, -166533.78, -57589.133, -250653.77, -310511.44, -317839.9, -325205.56, -57824.906, -347709.4, -261146.08, -332192.25, -248528.55, -37505.125, -186543.6, -84391.99, -137439.22, -315033.1, -334438.25, -163282.3, 3558.8076, 67881.8, -6284.374, 46412.418, 23216.578, 49957.21, 68232.09, 26576.572, -264261.53, -96321.89, -83752.1, -250203.02, 60666.363, -238604.16, -105676.53, 26141.973, 30620.648, -285061.5, -284994.78, -32276.594, -33513.695, -181861.33, -164176.19, -54228.797, -194282.19, -151931.4, -124562.31, 10223.187, -141380.94, 16272.407, -185393.77, -210124.64, -66505.04, 74935.28, -230096.11, -155981.72, -4825.1377, -221224.61, -118489.52, -125565.94, -115090.7, -290702.34, -266031.75, -363311.3, -357614.4, -373675.4, -331507.88, -308406.75, -225970.75, -311312.75, -335433.34, -178113.12, -349650.53, -319186.94, -283380.28, -318859, -352864.22, -329930.88, -112255.82, -205605.23, -237107.47, -232127.27, -218466.02, -157990.56, -224515.08, -54581.336, -80793.13, -138119.81, -54145.703, -306774.1, -229657.58, -302810.97, -200096.45, -165125.14, -302559.9, -167227.14, -132749.4, -152436.19, -228052.48, -101751.73, -354584.84, -293253.47, -291208.12, -345438.94, -301808.66, -369068.25, -379185.75, -246758.86, -261212.03, -322811.4, -199265.67, -278229.53, -328381.8, -232375.77, -141674.44, -168221.08, -246364.92, -259019.38, -259129.45, -191799.98, -288175.06, -150218.73, -213484.47, -199427.16, -253580.23, -400942.8, -148231.03, -346207.47, 213851.75, 229717.94, 225898.39, 65707.77, 142887.77, -100030.945, -97186.75, -61482.246, -126215.82, -20753.445, -16308.151, -2251.0652, -30792.4, -47491.742, 59856.37, 86892.29, 63268.39, 202991.6, 160290.42, 183720.39, 151569.47, 151247.98, 246764.06, 225277.28, 85984.984, 187127.47, 149772.83, -34501.105, 135628.98, 135399.83, 100482.72, 160333.88, 197525.75, 131222.55, 217038.12, 218663.56, 146609.56, 121090.03, 165691.95, 263021.6, 175880.92, 251295.86, 231598.28, 229110.16, 249913.39, 386282.3, 369295.9, 314282.78, 273731.5, 375903.5, 350043.78, 325914.62, 200936.06, 204823.95, 237831.17, 156592.3, 107547.73, 158118.27, 198545.23, 218812.36, 261010.12, 325835.94, 299154.97, 313666.12, 158362.89, 264951.94, 190025.92, 120343.71, 253379.84, 85412.9, 241026.19, 255665.7, 229846.11, 113584.48, 107440.53]];
             geyserSpawnLocationsPixel = [[344.13594920634927, 717.5866666666667, 687.15837460317459, 1448.8542984126984, 1344.9637333333333, 1370.931911111111, 1325.9701333333333, 1340.5202539682539, 1334.9425396825397, 1282.7913295238095, 935.78437587301585, 1124.4481955555557, 906.58392380952375, 777.52187936507937, 1001.4247466666667, 1011.5987936507937, 927.04764444444447, 820.50250158730159, 682.86554920634921, 808.85210412698416, 565.64393650793647, 414.494526984127, 250.0619682539683, 349.58958730158736, 195.831873015873, 434.53333333333336, 490.5033650793651, 227.59634285714284, 655.05955555555556],
             [374.76777142857168, 214.2259555555554, 454.70948571428562, 539.74504126984129, 492.14534603174593, 656.87187301587323, 819.13815873015869, 759.20027936507927, 696.93716825396837, 584.2992507936508, 855.35914666666667, 961.84820317460321, 678.36939682539673, 568.3318603174605, 382.00507936507938, 1172.5757968253968, 1226.23713015873, 1104.2437307936507, 1116.8534907936507, 1162.6201092063493, 846.06697142857138, 750.4497523809523, 738.60720253968248, 1000.6637790476191, 911.77911619047609, 1070.9744457142858, 1161.4832152380952, 437.16495238095217, 858.57930158730142]];
+        }
+
+        if (indexOfSubarray(data, stringToBytes('Terrain_021'), offset)) {
+            world = "Elysium";
+            map_scale = 4096;
+            // Elysium exotic spawn locations - to be filled in once data is available
+            exoticPossibleSpawn = [[], []];
+            geyserSpawnLocationsPixel = [[], []];
+        }
+
+        if (world === "Unknown" || map_scale === 0) {
+            throw new Error(`Unrecognised map in save file. This prospect does not appear to be Olympus, Styx, Prometheus, or Elysium.`);
         }
 
         // So far so good
@@ -290,12 +303,19 @@ async function handleFile(file) {
             }
 
         }
-        console.log(Ressource);
+        // Log a summary of all found resources and their counts
+        const resourceCounts = {};
+        Ressource.forEach(r => resourceCounts[r] = (resourceCounts[r] || 0) + 1);
+        console.log("All resources found in save file:", resourceCounts);
         // Display results
+        const unknownWarning = unknownResources.size > 0
+            ? `⚠️ Unknown resources (no icon): ${[...unknownResources].join(', ')}\n`
+            : '';
         output.textContent = `Processed ${file.name} successfully!\n` +
-            `World: ${world}\n`;
+            `World: ${world}\n` +
+            unknownWarning;
 
-        const assetNames = ['Aluminium', 'Clay', 'Coal', 'Copper', 'Frozen_Wood', 'Gold', 'Iron', 'Obsidian', 'Oxite', 'Platinum', 'Salt', 'Scoria', 'Silicon', 'Stone', 'Sulfur', 'Titanium', 'Exotic', 'Exotic_Red_Raw', 'Super_Cooled_Ice'];
+        const assetNames = ['Aluminium', 'Clay', 'Coal', 'Copper', 'Frozen_Wood', 'Gold', 'Iron', 'Obsidian', 'Oxite', 'Platinum', 'Salt', 'Scoria', 'Silicon', 'Stone', 'Sulfur', 'Titanium', 'Exotic', 'Exotic_Red_Raw', 'Super_Cooled_Ice', 'Exotic_Raw_Uranium'];
         // search needle to add: PersistentLevel.BP_Exotic_Plant_C
         const fixedassetNames = ['VoxelExotic'];
         if (world == "Prometheus") {
@@ -344,8 +364,25 @@ async function handleFile(file) {
 
 
         const bounds = [[0, 0], [imgHeight, imgWidth]]; // [top-left, bottom-right] in pixels
-        const imageLayer = L.imageOverlay(`assets/Maps/${world}Filtered.png`, bounds);
-        const imageLayerNullSector = L.imageOverlay(`assets/Maps/${world}FilteredNull.png`, bounds);
+
+        // Try loading map image; fall back to a plain dark background if missing (e.g. Elysium placeholder)
+        function tryImageOverlay(url, bounds) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(L.imageOverlay(url, bounds));
+                img.onerror = () => {
+                    console.warn(`Map image not found: ${url} — using placeholder background.`);
+                    resolve(null);
+                };
+                img.src = url;
+            });
+        }
+
+        const imageLayer = await tryImageOverlay(`assets/Maps/${world}Filtered.png`, bounds) ||
+            L.imageOverlay('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', bounds); // 1px transparent fallback
+        const imageLayerNullSector = world === "Prometheus"
+            ? await tryImageOverlay(`assets/Maps/${world}FilteredNull.png`, bounds)
+            : null;
 
         imageLayer.addTo(map);
         let curveX;
@@ -451,11 +488,15 @@ async function handleFile(file) {
         const assets = await loadAssets(assetNames);
         const icons = {};
         assetNames.forEach((name, i) => {
-            icons[name] = L.icon({
-                iconUrl: assets[i].src,
-                iconSize: name.includes('Exotic') ? [40, 40] : [40, 40],
-                iconAnchor: name.includes('Exotic') ? [20, 20] : [20, 20] // center anchor
-            });
+            if (assets[i]) {
+                icons[name] = L.icon({
+                    iconUrl: assets[i].src,
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
+                });
+            } else {
+                console.warn(`No image found for ore: ${name} — markers for this ore will be skipped.`);
+            }
         });
 
         const deepOremarkers = [];
@@ -464,11 +505,18 @@ async function handleFile(file) {
 
         for (let nb_deep_veins = 0; nb_deep_veins < Ressource.length; nb_deep_veins++) {
 
-            const asset = new Image();
             const curr_ressource = Ressource[nb_deep_veins];
-            id = assetNames.indexOf(curr_ressource);
             const latLng = [map_scale - Y[nb_deep_veins], X[nb_deep_veins]];
             const icon = icons[curr_ressource];
+
+            if (!icon) {
+                if (!unknownResources.has(curr_ressource)) {
+                    unknownResources.add(curr_ressource);
+                    console.warn(`Unknown or missing icon for resource: "${curr_ressource}" — add assets/Ores/${curr_ressource}.png to support it.`);
+                }
+                continue;
+            }
+
             var marker = L.marker(latLng, { icon })
             marker.bindPopup(curr_ressource);
             if ((curr_ressource != 'Exotic' && curr_ressource != 'Exotic_Red_Raw')) {
