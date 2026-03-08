@@ -145,6 +145,13 @@ async function handleFile(file) {
             geyserSpawnLocationsPixel = [[344.13594920634927, 717.5866666666667, 687.15837460317459, 1448.8542984126984, 1344.9637333333333, 1370.931911111111, 1325.9701333333333, 1340.5202539682539, 1334.9425396825397, 1282.7913295238095, 935.78437587301585, 1124.4481955555557, 906.58392380952375, 777.52187936507937, 1001.4247466666667, 1011.5987936507937, 927.04764444444447, 820.50250158730159, 682.86554920634921, 808.85210412698416, 565.64393650793647, 414.494526984127, 250.0619682539683, 349.58958730158736, 195.831873015873, 434.53333333333336, 490.5033650793651, 227.59634285714284, 655.05955555555556],
             [374.76777142857168, 214.2259555555554, 454.70948571428562, 539.74504126984129, 492.14534603174593, 656.87187301587323, 819.13815873015869, 759.20027936507927, 696.93716825396837, 584.2992507936508, 855.35914666666667, 961.84820317460321, 678.36939682539673, 568.3318603174605, 382.00507936507938, 1172.5757968253968, 1226.23713015873, 1104.2437307936507, 1116.8534907936507, 1162.6201092063493, 846.06697142857138, 750.4497523809523, 738.60720253968248, 1000.6637790476191, 911.77911619047609, 1070.9744457142858, 1161.4832152380952, 437.16495238095217, 858.57930158730142]];
         }
+        if (indexOfSubarray(data, stringToBytes('Terrain_021'), offset)) {
+            world = "Elysium";
+            map_scale = 4096;
+            exoticPossibleSpawn = [[275932.660000000,202694.670000000,162921.940000000,246614.420000000,257556,312579.280000000,111073.190000000,242784.530000000,276896.100000000,116814.900000000,202809.480000000,219297.190000000,75588.6200000000,328032,114622.790000000,154957.750000000,119481.805000000,92988.3100000000,100686.220000000,292549.340000000,223720.830000000,-292068.620000000,-179591.810000000,-173510.170000000,-284055.060000000,-258837.970000000,-140761.550000000,-127728.780000000,-203971.340000000,-269422.800000000,-250521.080000000,-317212.530000000,-326080.560000000,-71805.6100000000,-351410.100000000,-255048.660000000,-83050.8600000000,-13153.1290000000,-7701.16460000000,-107700.100000000,-76534.1640000000,-99089.1800000000,-112144.770000000,-44172.0430000000,-87845.0300000000,-125843.730000000,-227853.080000000,-152933.600000000,-36359.6840000000,163930.690000000,118024.586000000,115616.080000000,92785.3000000000,125518.110000000,52870.0080000000,-66036.3700000000,24075.0400000000,-81063.8750000000,184572.940000000,62484.9770000000,-16609.4220000000,75454,21631.9040000000,170416.920000000,28727.3630000000,57922.6370000000,-19352.2290000000,55831.3600000000,198131.120000000,190311.660000000,171122.750000000,59771.5430000000,141608.470000000,138255.610000000,261230.110000000,87047.2000000000,23936.1500000000,71868.6250000000,-20814.4120000000,113278.650000000,82798.1800000000,347589.560000000,360824.120000000,308483.880000000,375130.220000000,315055.800000000,269016.120000000,235672.140000000,229059.980000000,268450.100000000,254930.250000000,283876.160000000,229726.170000000,288446.380000000,324846.100000000,180250.770000000,331733.600000000,256982.600000000,356529.780000000,361461.600000000,309879.880000000,319027.500000000,331127.620000000,353166.530000000,333506.840000000,270874.500000000,259299.530000000,256139.860000000,324185.970000000,312042.300000000,238690.920000000,304753.970000000,291049.340000000,267532.100000000,229352.810000000,239471.380000000,314969.340000000,321321.060000000,-149550.310000000,-224536.330000000,-264566.250000000,-324701.880000000,-259033,-165651.670000000,-215645.020000000,-215547.330000000,-301702.620000000,-100475.600000000,17829.1820000000,82022.3000000000,49363.2270000000,-77225.2600000000,-314464.530000000,-347223.600000000,43800.1200000000,-21078.8400000000,30081.9320000000,16043.5040000000,-9055.22100000000,-28927.9650000000,-106355.180000000,-133165.900000000,-137187.420000000,-108801.860000000,-180812.890000000,-213480.200000000,-77821.9200000000,-241284.340000000,-250323,-220228.230000000,-290052.500000000,-300903.620000000,-325182.470000000,-265341.530000000,-244024.900000000,-327036.720000000,-306006.300000000,-27401.5000000000,-267220.560000000,-243619.440000000,-300470.660000000,-308052.700000000,-296563.880000000,-292285.440000000,-284748.600000000,-173508.360000000,-322056.750000000,-371695.720000000,-310540.200000000,-270054.470000000,-256957.050000000,-110907.360000000,227314.880000000,15337.2480000000,-37366.7700000000,62685.9600000000,7547.59200000000,-73176.6600000000,58074.7660000000,-147156.500000000,-69371.7200000000,165637.690000000,-48666.0860000000,-167757.060000000,-208012.950000000,138145.060000000,152603.840000000,145788.600000000,-97571.1640000000,-38501.9140000000,-85425.6700000000,34293.5940000000,183219.300000000,-129517.750000000,106366.580000000,93555.3050000000,67178.3400000000,81007.1000000000,189303.880000000,158740.770000000,141563.580000000,132911.390000000,-142158.480000000,-109370.280000000,18627.7990000000,-38772.1520000000,110075.480000000,-21574.4500000000,46440.9020000000,-115302.080000000,-18319.3030000000,-33966.3900000000,135180.940000000,192219.810000000,185232.730000000,164688.690000000,-25001.2200000000],
+            [-141352.770000000,-133096.830000000,-170076.950000000,-164564.160000000,-75558.4100000000,-53962.4840000000,-255056.660000000,-207147.050000000,-179382.270000000,-238608.380000000,-216946.770000000,-197508.170000000,-214480.810000000,-114522.750000000,-208580.480000000,-204118.110000000,-224195.640000000,-201575.100000000,-210024.520000000,-99255.1400000000,-163754.800000000,201211.220000000,210564.950000000,149828.920000000,122819.900000000,38069,72533.3400000000,6168.19100000000,34768.0600000000,69087.8800000000,123499.484000000,138305.100000000,144307.720000000,258985.830000000,58484.6560000000,84745.6500000000,124477.800000000,104717.310000000,130410.700000000,139502.280000000,115740.984000000,188214.310000000,104187.550000000,240524.620000000,279816.200000000,239594.360000000,252353.170000000,267689.400000000,165469.810000000,245356.310000000,303817.840000000,248475.400000000,310596.720000000,170029.900000000,233050.550000000,316828.030000000,287529.620000000,338150.500000000,140842.330000000,292008.470000000,302094.300000000,271338.840000000,355354.380000000,139098.440000000,187067.450000000,136340.800000000,208072.340000000,168491.250000000,117288.195000000,147546.670000000,152803.450000000,188261.770000000,227614.420000000,195164.560000000,86472.0800000000,150424.610000000,305915.220000000,320926.400000000,320122.160000000,211719.860000000,219557.520000000,99887.1500000000,43455.1950000000,146281.700000000,263686.300000000,325346.780000000,237236.110000000,217897.530000000,167622.890000000,278761.660000000,356444.560000000,314899.970000000,292988.160000000,201984.980000000,102019.760000000,315365.470000000,226863.810000000,115259.280000000,287344.470000000,303838.470000000,250381.660000000,287220.560000000,316939.940000000,243160.840000000,270569.560000000,195392.780000000,326231.440000000,328299.600000000,109115.840000000,179623.480000000,139973.310000000,94562.9000000000,186763.520000000,142512.480000000,124103.850000000,49564.0550000000,69007.8000000000,60490.3870000000,-257060.970000000,-278209.530000000,-68871.3360000000,-16830.0080000000,-328923.300000000,-330507.530000000,-112568.734000000,-233874.670000000,-214837.640000000,-205269.400000000,-256935.110000000,-298336.030000000,-343784.720000000,-350592.660000000,11242.8340000000,3681.21680000000,-271050.970000000,-301173.560000000,-336267.900000000,-306429.470000000,-333769.880000000,-353970.400000000,-304445.700000000,-234005.770000000,-363120.220000000,-358515.900000000,-364466.750000000,-325418.780000000,-229247.340000000,-366800.560000000,-303837.750000000,-338511.380000000,-329094.720000000,-312374.380000000,-290164.970000000,-257502.670000000,-255104.170000000,-130053.620000000,-134485.780000000,-260045.780000000,-103488.520000000,-105179.660000000,-105936.680000000,-93698.0700000000,-70222.2400000000,-43953.2100000000,-34744.3950000000,-282084.800000000,-71633.9400000000,-79558.7100000000,-117747.234000000,-141674.810000000,-179420.620000000,-270572.340000000,5204.72560000000,-174850.310000000,-181138.580000000,21929.4510000000,48211.1950000000,-70234.6600000000,-40881.5080000000,-145311.140000000,-176981.890000000,-40615.7460000000,13740.3800000000,39344.9100000000,-50507.7150000000,-5751.07400000000,-9964.19900000000,-3800.02500000000,69941.8200000000,58707.3830000000,28805.8520000000,-63101.6000000000,-43909.5500000000,-167334.160000000,36353.7400000000,-172238.500000000,-89809.0600000000,20665.3360000000,-81941.3050000000,-95613.4140000000,18758.4840000000,48608.1760000000,-60611.3440000000,-74839.3600000000,-136128.270000000,-81029.9800000000,-2815.30740000000,-16528.2870000000,75939.9200000000,8473.16700000000,29876.3460000000,94903.5100000000,-124025.420000000,-16720.2100000000,52358.1680000000,-22555.2400000000,-66051.0160000000]];
+            geyserSpawnLocationsPixel = [[]];
+        }
 
         // So far so good
         const Max_map_size_meters = 403200;
@@ -295,7 +302,7 @@ async function handleFile(file) {
         output.textContent = `Processed ${file.name} successfully!\n` +
             `World: ${world}\n`;
 
-        const assetNames = ['Aluminium', 'Clay', 'Coal', 'Copper', 'Frozen_Wood', 'Gold', 'Iron', 'Obsidian', 'Oxite', 'Platinum', 'Salt', 'Scoria', 'Silicon', 'Stone', 'Sulfur', 'Titanium', 'Exotic', 'Exotic_Red_Raw', 'Super_Cooled_Ice'];
+        const assetNames = ['Aluminium', 'Clay', 'Coal', 'Copper', 'Frozen_Wood', 'Gold', 'Iron', 'Obsidian', 'Oxite', 'Platinum', 'Salt', 'Scoria', 'Silicon', 'Stone', 'Sulfur', 'Titanium', 'Exotic', 'Exotic_Red_Raw', 'Super_Cooled_Ice', 'Exotic_Raw_Uranium'];
         // search needle to add: PersistentLevel.BP_Exotic_Plant_C
         const fixedassetNames = ['VoxelExotic'];
         if (world == "Prometheus") {
@@ -458,9 +465,16 @@ async function handleFile(file) {
             });
         });
 
-        const deepOremarkers = [];
+        const deepOreMarkers = {};
+        const deepOreMarkersNullSector = {};
         const exoticOreMarkers = [];
-        const deepOreMarkersNullSector = [];
+        const exoticUraniumMarkers = [];
+
+        // Initialize marker arrays for each resource
+        assetNames.forEach(name => {
+            deepOreMarkers[name] = [];
+            deepOreMarkersNullSector[name] = [];
+        });
 
         for (let nb_deep_veins = 0; nb_deep_veins < Ressource.length; nb_deep_veins++) {
 
@@ -471,33 +485,184 @@ async function handleFile(file) {
             const icon = icons[curr_ressource];
             var marker = L.marker(latLng, { icon })
             marker.bindPopup(curr_ressource);
-            if ((curr_ressource != 'Exotic' && curr_ressource != 'Exotic_Red_Raw')) {
+            if ((curr_ressource != 'Exotic' && curr_ressource != 'Exotic_Red_Raw' && curr_ressource != 'Exotic_Raw_Uranium')) {
                 if (world == "Prometheus") {
                     if (InNullsector(X[nb_deep_veins], Y[nb_deep_veins])) {
-                        deepOreMarkersNullSector.push(marker);
+                        deepOreMarkersNullSector[curr_ressource].push(marker);
                     } else {
-                        deepOremarkers.push(marker);
+                        deepOreMarkers[curr_ressource].push(marker);
                     }
                 } else {
-                    deepOremarkers.push(marker);
+                    deepOreMarkers[curr_ressource].push(marker);
                 }
             }
             if ((curr_ressource == 'Exotic' || curr_ressource == 'Exotic_Red_Raw')) {
                 exoticOreMarkers.push(marker);
             }
+            if(( curr_ressource == 'Exotic_Raw_Uranium')){
+                exoticUraniumMarkers.push(marker);
+            }
 
         };
 
+
+        const resourceLayers = {};
+        const resourceLayersNullSector = {};
+        assetNames.forEach(name => {
+            if (deepOreMarkers[name].length > 0 || deepOreMarkersNullSector[name].length > 0) {
+                resourceLayers[name] = L.layerGroup(deepOreMarkers[name]);
+                if (world == "Prometheus") {
+                    resourceLayersNullSector[name] = L.layerGroup(deepOreMarkersNullSector[name]);
+                }
+            }
+        });
+
         let exoticVoxel = L.layerGroup(voxelExoticMarkers);
         const exoticVoxelNullSector = L.layerGroup(voxelExoticMarkersNullSector);
-        let deepOre = L.layerGroup(deepOremarkers);
-        const deepOreNullSector = L.layerGroup(deepOreMarkersNullSector);
         const exoticOre = L.layerGroup(exoticOreMarkers);
+        const exoticUranium = L.layerGroup(exoticUraniumMarkers);
 
-
-        layerControl.addOverlay(deepOre, "Deep ore veins");
-        layerControl.addOverlay(exoticOre, "Exotic Deposit");
+        if(world == 'Elysium'){
+            layerControl.addOverlay(exoticUranium, "Uranium");
+        }
         layerControl.addOverlay(exoticVoxel, "Exotic Voxels");
+
+                // Create a single "Deep ore vein" option in layer control
+        // We'll use a dummy layer group just for the control, and manage individual layers manually
+        const availableResources = Object.keys(resourceLayers).sort();
+        const oreDepositGroup = L.layerGroup(); // Empty group, just for control
+        
+        // Add all ore layers to map initially (all visible by default)
+        availableResources.forEach(name => {
+            resourceLayers[name].addTo(map);
+        });
+        
+        // Add layers to layer control
+        layerControl.addOverlay(oreDepositGroup, "Deep ore veins");
+        layerControl.addOverlay(exoticOre, "Exotic Deposits");
+        layerControl.addOverlay(exoticVoxel, "Exotic Voxels");
+        
+        // Add oreDepositGroup to map initially (so it's checked by default)
+        oreDepositGroup.addTo(map);
+        
+        // Create filter UI
+        const filterContainer = document.getElementById("resourceFilters");
+        const filterCheckboxes = document.getElementById("filterCheckboxes");
+        filterCheckboxes.innerHTML = "";
+        
+        // Create checkboxes for each resource
+        availableResources.forEach(name => {
+            const label = document.createElement("label");
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = name;
+            checkbox.checked = true; // All checked by default
+            checkbox.id = `filter-${name}`;
+            
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    if (!map.hasLayer(resourceLayers[name])) {
+                        resourceLayers[name].addTo(map);
+                    }
+                    // Add null sector layer if we're showing null sector
+                    if (world == "Prometheus" && resourceLayersNullSector[name] && map.hasLayer(imageLayerNullSector)) {
+                        if (!map.hasLayer(resourceLayersNullSector[name])) {
+                            resourceLayersNullSector[name].addTo(map);
+                        }
+                    }
+                } else {
+                    map.removeLayer(resourceLayers[name]);
+                    if (world == "Prometheus" && resourceLayersNullSector[name]) {
+                        map.removeLayer(resourceLayersNullSector[name]);
+                    }
+                }
+            });
+            
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(name));
+            label.htmlFor = checkbox.id;
+            filterCheckboxes.appendChild(label);
+        });
+        
+        // Function to position filter box below layer control
+        function positionFilterBox() {
+            const layerControlElement = document.querySelector('.leaflet-control-layers');
+            if (layerControlElement && filterContainer.style.display !== 'none') {
+                const layerControlRect = layerControlElement.getBoundingClientRect();
+                const mapRect = map.getContainer().getBoundingClientRect();
+                const topOffset = layerControlRect.bottom - mapRect.top + 10; // 10px gap
+                filterContainer.style.top = topOffset + 'px';
+            }
+        }
+        
+        // Show filter UI initially (since Deep ore vein is checked by default)
+        filterContainer.style.display = "block";
+        // Position it after a short delay to ensure layer control is rendered
+        setTimeout(positionFilterBox, 100);
+        
+        // Reposition on window resize
+        window.addEventListener('resize', positionFilterBox);
+        
+        // Select All / Deselect All buttons
+        const selectAllBtn = document.getElementById("selectAll");
+        const deselectAllBtn = document.getElementById("deselectAll");
+        
+        selectAllBtn.onclick = () => {
+            availableResources.forEach(name => {
+                const checkbox = document.getElementById(`filter-${name}`);
+                if (checkbox && !checkbox.checked) {
+                    checkbox.checked = true;
+                    checkbox.dispatchEvent(new Event("change"));
+                }
+            });
+        };
+        
+        deselectAllBtn.onclick = () => {
+            availableResources.forEach(name => {
+                const checkbox = document.getElementById(`filter-${name}`);
+                if (checkbox && checkbox.checked) {
+                    checkbox.checked = false;
+                    checkbox.dispatchEvent(new Event("change"));
+                }
+            });
+        };
+        
+        // Show/hide filter UI and individual ore layers based on Deep ore vein layer visibility
+        map.on('overlayadd', function(e) {
+            if (e.layer === oreDepositGroup) {
+                filterContainer.style.display = "block";
+                setTimeout(positionFilterBox, 100);
+                // Show all ore layers that are checked in the filter
+                availableResources.forEach(name => {
+                    const checkbox = document.getElementById(`filter-${name}`);
+                    if (checkbox && checkbox.checked) {
+                        if (!map.hasLayer(resourceLayers[name])) {
+                            resourceLayers[name].addTo(map);
+                        }
+                        // Add null sector layer if showing null sector
+                        if (world == "Prometheus" && resourceLayersNullSector[name] && map.hasLayer(imageLayerNullSector)) {
+                            if (!map.hasLayer(resourceLayersNullSector[name])) {
+                                resourceLayersNullSector[name].addTo(map);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        
+        map.on('overlayremove', function(e) {
+            if (e.layer === oreDepositGroup) {
+                filterContainer.style.display = "none";
+                // No need to reposition when hidden
+                // Hide all ore layers
+                availableResources.forEach(name => {
+                    map.removeLayer(resourceLayers[name]);
+                    if (world == "Prometheus" && resourceLayersNullSector[name]) {
+                        map.removeLayer(resourceLayersNullSector[name]);
+                    }
+                });
+            }
+        });
 
         if (world == "Prometheus") {
 
@@ -534,8 +699,13 @@ async function handleFile(file) {
                         map.removeLayer(imageLayerNullSector);
                         imageLayer.addTo(map);
 
-                        deepOre.clearLayers();
-                        deepOre.addLayer(L.layerGroup(deepOremarkers));
+                        
+                        // Remove null sector layers for all resources
+                        Object.keys(resourceLayersNullSector).forEach(name => {
+                            if (map.hasLayer(resourceLayersNullSector[name])) {
+                                map.removeLayer(resourceLayersNullSector[name]);
+                            }
+                        });
 
                         exoticVoxel.clearLayers();
                         exoticVoxel.addLayer(L.layerGroup(voxelExoticMarkers));
@@ -543,9 +713,12 @@ async function handleFile(file) {
                         map.removeLayer(imageLayer);
                         imageLayerNullSector.addTo(map);
 
-                        deepOre.clearLayers();
-                        deepOre.addLayer(L.layerGroup(deepOremarkers));
-                        deepOre.addLayer(deepOreNullSector);
+                        // Add null sector layers for all resources that are currently visible (checked in layer control)
+                        Object.keys(resourceLayersNullSector).forEach(name => {
+                            if (map.hasLayer(resourceLayers[name]) && resourceLayersNullSector[name]) {
+                                resourceLayersNullSector[name].addTo(map);
+                            }
+                        });
 
                         exoticVoxel.clearLayers();
                         exoticVoxel.addLayer(L.layerGroup(voxelExoticMarkers));
