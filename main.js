@@ -525,8 +525,6 @@ async function handleFile(file) {
         if(world == 'Elysium'){
             layerControl.addOverlay(exoticUranium, "Uranium");
         }
-        layerControl.addOverlay(exoticVoxel, "Exotic Voxels");
-
                 // Create a single "Deep ore vein" option in layer control
         // We'll use a dummy layer group just for the control, and manage individual layers manually
         const availableResources = Object.keys(resourceLayers).sort();
