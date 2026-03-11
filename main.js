@@ -14,6 +14,15 @@ let map;
     });
 });
 
+function supportsWebP() {
+  const canvas = document.createElement('canvas');
+  if (!!(canvas.getContext && canvas.getContext('2d'))) {
+    // Check if WebP is supported
+    return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+  }
+  return false;
+}
+
 window.addEventListener("dragover", (e) => e.preventDefault(), false);
 window.addEventListener("drop", (e) => e.preventDefault(), false);
 
@@ -37,6 +46,8 @@ async function handleFile(file) {
             // Assume UTF-8
             text = new TextDecoder("utf-8").decode(arrayBuffer);
         }
+
+        console.time("myTimer");
 
         const lines = text.split(/(?<=\r?\n)/);
 
@@ -179,10 +190,15 @@ async function handleFile(file) {
 
 
         const bounds = [[0, 0], [imgHeight, imgWidth]]; // [top-left, bottom-right] in pixels
-        const imageLayer = L.imageOverlay(`assets/Maps/${world}Filtered_95.jpg`, bounds);
+        const iswebP = supportsWebP();
+        const imageLayer = iswebP
+            ? L.imageOverlay(`assets/Maps/${world}.webp`, bounds)
+            : L.imageOverlay(`assets/Maps/${world}.jpg`, bounds);
         let imageLayerNullSector;
         if(world == "Prometheus"){
-            imageLayerNullSector = L.imageOverlay(`assets/Maps/${world}FilteredNull_95.jpg`, bounds);
+            imageLayerNullSector = iswebP
+            ? L.imageOverlay(`assets/Maps/${world}Null.jpg`, bounds)
+            : L.imageOverlay(`assets/Maps/${world}Null.jpg`, bounds);
         }
         
 
@@ -726,6 +742,7 @@ async function handleFile(file) {
         console.error(err);
         output.textContent = `Error processing ${file.name}: ${err}`;
     }
+console.timeEnd("myTimer");
 }
 
 fileInput.addEventListener("change", (e) => {
