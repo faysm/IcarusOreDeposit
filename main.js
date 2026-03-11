@@ -1,5 +1,6 @@
 // npx serve
 // -------------------- Grab DOM elements --------------------
+
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
 const output = document.getElementById("output");
@@ -158,149 +159,35 @@ async function handleFile(file) {
         const Min_map_size_meters = -403200;
         const scale = (Max_map_size_meters - Min_map_size_meters) / map_scale;
 
-        let X = [];
-        let Y = [];
-        let Ressource = [];
-
-        // Bwah there's probably a lib to read little-endian integers, but i cba 
-        function readUInt32LE(bytes, offset) {
-            return (
-                bytes[offset] |
-                (bytes[offset + 1] << 8) |
-                (bytes[offset + 2] << 16) |
-                (bytes[offset + 3] << 24)
-            ) >>> 0;
+        // Leaflet stuff, i guess
+        if (map) {
+            map.remove(); // destroy old map
         }
 
+        const imgWidth = map_scale;
+        const imgHeight = map_scale;
 
-        const flags = [
-            'Script/Icarus.ResourceDeposit',
-            'VoxelActorLocation'
-        ];
-        let skipLengths = [29, 18];
-        if (world == "Prometheus") {
-            flags.push('Terrain_019_DLC/Terrain_019.Terrain_019:PersistentLevel.BP_Exotic_Plant_C');
-            skipLengths.push(73);
+        map = L.map('map', {
+            crs: L.CRS.Simple, // Simple coordinate system for non-geographical maps
+            minZoom: -2,
+            maxBounds: [[-0.1 * map_scale, -0.1 * map_scale], [map_scale * 1.1, map_scale * 1.1]],
+            maxBoundsViscosity: 1.0,
+            zoomSnap: 0,
+            zoomDelta: 0.2,
+            wheelPxPerZoomLevel: 120
+        });
+
+
+        const bounds = [[0, 0], [imgHeight, imgWidth]]; // [top-left, bottom-right] in pixels
+        const imageLayer = L.imageOverlay(`assets/Maps/${world}Filtered_95.jpg`, bounds);
+        let imageLayerNullSector;
+        if(world == "Prometheus"){
+            imageLayerNullSector = L.imageOverlay(`assets/Maps/${world}FilteredNull_95.jpg`, bounds);
         }
+        
 
+        imageLayer.addTo(map);
 
-        let flagNeedupdateArray = [];
-        let offsetArray = [];
-        for (let i = 0; i < flags.length; i++) {
-            flagNeedupdateArray.push(1);
-            offsetArray.push(1);
-        }
-
-        let X_voxel = [];
-        let Y_voxel = [];
-        let X_strangePlant = [];
-        let Y_strangePlant = [];
-
-        flagNeedupdateArray.some
-
-        // I feel like this is more complicated than it should be. I want to minimise the calls to indexOfSubarray as much as possible (expensiveish).
-        // So i want the offset to move linearly through the bytes blob and not jump left & right.
-        // For now i'm using flags so it's probably the most efficient, but it's really not the smartest, and it's somewhat hard to read/navigate.
-        while (flagNeedupdateArray.some(v => v)) {
-
-            // update all flags
-            for (let i = 0; i < flagNeedupdateArray.length; i++) {
-                if (flagNeedupdateArray[i]) {
-                    offsetArray[i] = indexOfSubarray(data, stringToBytes(flags[i]), offset);
-                }
-                flagNeedupdateArray[i] = 0;
-            }
-
-
-            // Find next smallest non-zero offset & grab the flag index 
-            let nextIndex = -1;
-            let nextOffset = Infinity;
-            for (let i = 0; i < offsetArray.length; i++) {
-                if (offsetArray[i] !== 0 && offsetArray[i] < nextOffset) {
-                    nextOffset = offsetArray[i];
-                    nextIndex = i;
-                }
-            }
-
-            if (nextIndex === -1) {
-                break;
-            }
-
-            // Update the current: offset,flag, offsetskip
-            offset = nextOffset;
-            let flag = flags[nextIndex];
-            offset += skipLengths[nextIndex];
-            flagNeedupdateArray[nextIndex] = 1;
-
-            // Deep ore veins
-            if (flag == flags[0]) {
-
-                offset = indexOfSubarray(data, stringToBytes('NameProperty'), offset);
-                // Byte shift is 12 + null + 8 + null.
-                offset += 22;
-                // Grab length of ressource name
-                const name_len = readUInt32LE(data, offset);
-                offset += 4;
-
-                // Grab ressource name + offset
-                const slice = data.subarray(offset, offset + name_len - 1);
-                const decoder = new TextDecoder("utf-8", { fatal: false }); // errors are ignored
-                Ressource.push(decoder.decode(slice));
-                offset = indexOfSubarray(data, stringToBytes('Vector'), offset);
-
-                // Skipping \x00'Vector'\x00 + GUID padding
-                offset += 24;
-
-                // Grab vector coordinates (3 x float32 = 12 bytes) & scale them to map pixel coordinates
-                const vectorBytes = data.subarray(offset, offset + 12);
-                const view = new DataView(vectorBytes.buffer, vectorBytes.byteOffset, vectorBytes.byteLength);
-                offset += 12;
-
-                const x = (view.getFloat32(0, true) - Min_map_size_meters) / scale;
-                X.push(x);
-                const y = map_scale - (Max_map_size_meters - view.getFloat32(4, true)) / scale;
-                Y.push(y);
-                // z is really whatever for now, but lets stock it i guess. Keep in mind its not scaled properly.
-                const z = view.getFloat32(8, true) / scale;
-
-            }
-
-            // Exotic voxels
-            if (flag == flags[1]) {
-
-                offset = indexOfSubarray(data, stringToBytes('Vector'), offset);
-                offset += 24;
-
-                const vectorBytes = data.subarray(offset, offset + 12);
-                const view = new DataView(vectorBytes.buffer, vectorBytes.byteOffset, vectorBytes.byteLength);
-                offset += 12;
-                X_voxel.push(view.getFloat32(0, true));
-                Y_voxel.push(view.getFloat32(4, true));
-
-            }
-
-
-            // Exotic plants.
-            if (world == "Prometheus") {
-
-                if (flag == flags[2]) {
-                    // For exotic plants the logic is a bit different, need a new indexOfSubarray function to move backward & not forward (location bytes are before the flag).
-                    // It also means that i need to use a temp offset to avoid going backward & trigger the forward flag[2] on repeat.
-                    let offsettmp = lastIndexOfSubarray(data, stringToBytes('Translation'), offset);
-                    offsettmp = indexOfSubarray(data, stringToBytes('Vector'), offsettmp);
-                    offsettmp += 24;
-                    const vectorBytes = data.subarray(offsettmp, offsettmp + 12);
-                    const view = new DataView(vectorBytes.buffer, vectorBytes.byteOffset, vectorBytes.byteLength);
-                    X_strangePlant.push(view.getFloat32(0, true));
-                    Y_strangePlant.push(view.getFloat32(4, true));
-                }
-            }
-
-        }
-        console.log(Ressource);
-        // Display results
-        output.textContent = `Processed ${file.name} successfully!\n` +
-            `World: ${world}\n`;
 
         const assetNames = ['Aluminium', 'Clay', 'Coal', 'Copper', 'Frozen_Wood', 'Gold', 'Iron', 'Obsidian', 'Oxite', 'Platinum', 'Salt', 'Scoria', 'Silicon', 'Stone', 'Sulfur', 'Titanium', 'Exotic', 'Exotic_Red_Raw', 'Super_Cooled_Ice', 'Exotic_Raw_Uranium'];
         // search needle to add: PersistentLevel.BP_Exotic_Plant_C
@@ -330,31 +217,138 @@ async function handleFile(file) {
         }
 
 
-        // Leaflet stuff, i guess
-        if (map) {
-            map.remove(); // destroy old map
+        
+        let X = [];
+        let Y = [];
+        let Ressource = [];
+
+        const encoder = new TextEncoder();
+        const byteFlags = [
+            encoder.encode("Script/Icarus.ResourceDeposit"),
+            encoder.encode("VoxelActorLocation")
+        ];
+        let skipLengths = [29, 18];
+        if (world == "Prometheus") {
+            byteFlags.push(encoder.encode("Terrain_019_DLC/Terrain_019.Terrain_019:PersistentLevel.BP_Exotic_Plant_C"));
+            skipLengths.push(73);
+        }
+        
+        let flagNeedupdateArray = [];
+        let offsetArray = [];
+        for (let i = 0; i < byteFlags.length; i++) {
+            flagNeedupdateArray.push(1);
+            offsetArray.push(1);
         }
 
-        const imgWidth = map_scale;
-        const imgHeight = map_scale;
-        //console.log(map_scale);
+        let X_voxel = [];
+        let Y_voxel = [];
+        let X_strangePlant = [];
+        let Y_strangePlant = [];
 
-        map = L.map('map', {
-            crs: L.CRS.Simple, // Simple coordinate system for non-geographical maps
-            minZoom: -2,
-            maxBounds: [[-0.1 * map_scale, -0.1 * map_scale], [map_scale * 1.1, map_scale * 1.1]],
-            maxBoundsViscosity: 1.0,
-            zoomSnap: 0,
-            zoomDelta: 0.2,
-            wheelPxPerZoomLevel: 120
-        });
+        const byteNeedle = [
+            encoder.encode("NameProperty"),
+            encoder.encode("Vector"),
+            encoder.encode("Translation")
+        ]
+
+        // I feel like this is more complicated than it should be. I want to minimise the calls to indexOfSubarray as much as possible (expensiveish).
+        // So i want the offset to move linearly through the bytes blob and not jump left & right.
+        // For now i'm using flags so it's probably the most efficient, but it's really not the smartest, and it's somewhat hard to read/navigate.
+        const view1 = new DataView(data.buffer,data.byteOffset,data.byteLength);
+        const decoder = new TextDecoder("utf-8", { fatal: false }); 
+        while (flagNeedupdateArray.some(v => v)) {
+
+            // update all flags
+            for (let i = 0; i < flagNeedupdateArray.length; i++) {
+                if (flagNeedupdateArray[i]) {
+                    offsetArray[i] = indexOfSubarray(data, byteFlags[i], offset);
+                }
+                flagNeedupdateArray[i] = 0;
+            }
 
 
-        const bounds = [[0, 0], [imgHeight, imgWidth]]; // [top-left, bottom-right] in pixels
-        const imageLayer = L.imageOverlay(`assets/Maps/${world}Filtered.png`, bounds);
-        const imageLayerNullSector = L.imageOverlay(`assets/Maps/${world}FilteredNull.png`, bounds);
+            // Find next smallest non-zero offset & grab the flag index 
+            let nextIndex = -1;
+            let nextOffset = Infinity;
+            for (let i = 0; i < offsetArray.length; i++) {
+                if (offsetArray[i] !== 0 && offsetArray[i] < nextOffset) {
+                    nextOffset = offsetArray[i];
+                    nextIndex = i;
+                }
+            }
 
-        imageLayer.addTo(map);
+            if (nextIndex === -1) {
+                break;
+            }
+
+            // Update the current: offset,flag, offsetskip
+            offset = nextOffset;
+            let flag = byteFlags[nextIndex];
+            offset += skipLengths[nextIndex];
+            flagNeedupdateArray[nextIndex] = 1;
+
+            // Deep ore veins
+            if (flag == byteFlags[0]) {
+
+                offset = indexOfSubarray(data, byteNeedle[0], offset);
+                // Byte shift is 12 + null + 8 + null.
+                offset += 22;
+                // Grab length of ressource name
+                const name_len = view1.getUint32(offset, true);
+                //const name_len = readUInt32LE(data, offset);
+                offset += 4;
+
+                // Grab ressource name + offset
+                const slice = data.subarray(offset, offset + name_len - 1);
+                Ressource.push(decoder.decode(slice));
+                offset = indexOfSubarray(data, byteNeedle[1], offset);
+
+                // Skipping \x00'Vector'\x00 + GUID padding
+                offset += 24;
+
+                // Grab vector coordinates (3 x float32 = 12 bytes) & scale them to map pixel coordinates
+                const x = (view1.getFloat32(offset,true) - Min_map_size_meters) / scale;
+                X.push(x);
+                const y = map_scale - (Max_map_size_meters - view1.getFloat32(offset+4,true)) / scale;
+                Y.push(y);
+                // z is really whatever for now, but lets stock it i guess. Keep in mind its not scaled properly.
+                const z = view1.getFloat32(offset+8,true) / scale;
+                offset += 12;
+
+            }
+
+            // Exotic voxels
+            if (flag == byteFlags[1]) {
+
+                offset = indexOfSubarray(data, byteNeedle[1], offset);
+                offset += 24;
+
+                X_voxel.push(view1.getFloat32(offset, true));
+                Y_voxel.push(view1.getFloat32(offset+4, true));
+                offset += 12;
+
+            }
+
+
+            // Exotic plants.
+            if (world == "Prometheus") {
+
+                if (flag == byteFlags[2]) {
+                    // For exotic plants the logic is a bit different, need a new indexOfSubarray function to move backward & not forward (location bytes are before the flag).
+                    // It also means that i need to use a temp offset to avoid going backward & trigger the forward flag[2] on repeat.
+                    let offsettmp = lastIndexOfSubarray(data, byteNeedle[2], offset);
+                    offsettmp = indexOfSubarray(data, byteNeedle[1], offsettmp);
+                    offsettmp += 24;
+                    X_strangePlant.push(view1.getFloat32(offsettmp, true));
+                    Y_strangePlant.push(view1.getFloat32(offsettmp+4, true));
+                }
+            }
+
+        }
+        // Display results
+        output.textContent = `Processed ${file.name} successfully!\n` +
+            `World: ${world}\n`;
+
         let curveX;
         let curveY;
 
@@ -387,14 +381,10 @@ async function handleFile(file) {
         const cellHeight = map_scale / rows;
 
         const letters = 'ABCDEFGHIJKLMNOP';
-
-        const allLines = [];
         for (let r = 0; r < rows; r++) {
+            L.polyline([[0, r * cellWidth], [map_scale, r * cellWidth]], { color: 'grey', weight: 2, opacity: 0.7 }).addTo(gridLayer);
+            L.polyline([[r * cellHeight, 0], [r * cellHeight, map_scale]], { color: 'grey', weight: 2, opacity: 0.7 }).addTo(gridLayer);
             for (let c = 0; c < cols; c++) {
-
-                L.polyline([[0, c * cellWidth], [map_scale, c * cellWidth]], { color: 'grey', weight: 1, opacity: 0.7 }).addTo(gridLayer);
-                L.polyline([[r * cellHeight, 0], [r * cellHeight, map_scale]], { color: 'grey', weight: 1, opacity: 0.7 }).addTo(gridLayer);
-
                 // Add coordinate label (top-left of each cell)
                 const label = letters[c] + (16 - (r)); // e.g., A1, B3
                 L.marker([(r + 1) * cellHeight - 0.05 * cellHeight, (c * cellWidth) + cellWidth * 0.05], {
@@ -409,9 +399,8 @@ async function handleFile(file) {
             }
         }
 
-        L.polyline([[0, cols * cellWidth], [map_scale, cols * cellWidth]], { color: 'white', weight: 1, opacity: 0.7 }).addTo(gridLayer);
-        L.polyline([[rows * cellHeight, 0], [rows * cellHeight, map_scale]], { color: 'white', weight: 1, opacity: 0.7 }).addTo(gridLayer);
-
+        L.polyline([[0, cols * cellWidth], [map_scale, cols * cellWidth]], { color: 'grey', weight: 2, opacity: 0.7 }).addTo(gridLayer);
+        L.polyline([[rows * cellHeight, 0], [rows * cellHeight, map_scale]], { color: 'grey', weight: 2, opacity: 0.7 }).addTo(gridLayer);
 
         // Layer control
         var overlays = { "Grid": gridLayer };
@@ -453,7 +442,6 @@ async function handleFile(file) {
                 }
             }
         }
-
 
         const assets = await loadAssets(assetNames);
         const icons = {};
