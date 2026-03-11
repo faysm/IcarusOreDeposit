@@ -47,8 +47,6 @@ async function handleFile(file) {
             text = new TextDecoder("utf-8").decode(arrayBuffer);
         }
 
-        console.time("myTimer");
-
         const lines = text.split(/(?<=\r?\n)/);
 
         // Grab the blob
@@ -742,7 +740,6 @@ async function handleFile(file) {
         console.error(err);
         output.textContent = `Error processing ${file.name}: ${err}`;
     }
-console.timeEnd("myTimer");
 }
 
 fileInput.addEventListener("change", (e) => {
