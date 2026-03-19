@@ -203,7 +203,7 @@ async function handleFile(file) {
         imageLayer.addTo(map);
 
 
-        const assetNames = ['Aluminium', 'Clay', 'Coal', 'Copper', 'Frozen_Wood', 'Gold', 'Iron', 'Obsidian', 'Oxite', 'Platinum', 'Salt', 'Scoria', 'Silicon', 'Stone', 'Sulfur', 'Titanium', 'Exotic', 'Exotic_Red_Raw', 'Super_Cooled_Ice', 'Exotic_Raw_Uranium'];
+        const assetNames = ['Aluminium', 'Clay', 'Coal', 'Copper', 'Frozen_Wood', 'Gold', 'Iron','Limestone', 'Obsidian', 'Oxite', 'Platinum', 'Salt', 'Scoria', 'Silicon', 'Stone', 'Sulfur', 'Titanium', 'Exotic', 'Exotic_Red_Raw', 'Super_Cooled_Ice', 'Exotic_Raw_Uranium'];
         // search needle to add: PersistentLevel.BP_Exotic_Plant_C
         const fixedassetNames = ['VoxelExotic'];
         if (world == "Prometheus") {
